@@ -1,0 +1,7 @@
+# 忽略一切
+*
+
+# 只跟踪这三个
+!index.html
+!KANBAN.md
+!.gitignore
