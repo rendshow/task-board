@@ -1,16 +1,16 @@
 # 📅 2026.06.10（周三）任务看板
 
-### 🧑‍💻 人机^^
-- 🎯 **核心目标**: 普通数组 + 矩阵 7 题 + 多线程收尾
-- [ ] 课题配套软件（上午 2h）
-- [ ] **LC Day 4**: `#189` `#238` `#41` `#73` `#54` `#48` `#240`
-- [ ] **Java 八股 Day 4**: synchronized 锁升级 / ReentrantLock + AQS / volatile + CAS
-
 ### 👩‍💼 聪明蛋三三
 - 🎯 **核心目标**: 工具广场 — 让 Agent 学会调外部工具
 - [ ] **Agent Lab Day 7**: 写 Weather Tool + Search Tool，注册到 Agent
 - [ ] **算法**: ④ 三数之和 ⑤ 接雨水
 - [ ] **八股**: Function Calling 机制 — Tool Schema 怎么写、LLM 怎么决定调哪个
+
+### 🧑‍💻 人机^^
+- 🎯 **核心目标**: 普通数组 + 矩阵 7 题 + 多线程收尾
+- [ ] 课题配套软件（上午 2h）
+- [ ] **LC Day 4**: `#189` `#238` `#41` `#73` `#54` `#48` `#240`
+- [ ] **Java 八股 Day 4**: synchronized 锁升级 / ReentrantLock + AQS / volatile + CAS
 
 > 下次验证：周六下午。
 
