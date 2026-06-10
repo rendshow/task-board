@@ -1,145 +1,425 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📋 双人任务看板</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --heading: #f0f6fc;
-      --accent: #58a6ff;
-      --green: #3fb950;
-      --orange: #d2991d;
-      --muted: #8b949e;
-      --radius: 8px;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
-      line-height: 1.7;
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 32px 20px 64px;
-    }
-    h1 { color: var(--heading); font-size: 1.6em; margin: 0 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-    h3 { color: var(--heading); font-size: 1.15em; margin: 28px 0 10px; }
-    h3::before { margin-right: 6px; }
-    h3:has(+ ul li input[type="checkbox"]) { /* 自动渲染为卡片样式 */ }
-    ul { list-style: none; padding: 0; }
-    ul ul { padding-left: 18px; }
-    li { position: relative; padding: 4px 0 4px 24px; }
-    li:has(input[type="checkbox"]) { padding-left: 26px; }
-    /* 复选框 */
-    input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      position: absolute; left: 0; top: 7px;
-      width: 16px; height: 16px;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      background: var(--surface);
-      cursor: default;
-    }
-    input[type="checkbox"]:checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-    input[type="checkbox"]:checked::after {
-      content: '✓';
-      position: absolute;
-      left: 2px; top: -2px;
-      font-size: 12px; font-weight: bold;
-      color: #fff;
-    }
-    /* 代码 */
-    code {
-      background: var(--surface);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.9em;
-      color: var(--accent);
-      border: 1px solid var(--border);
-    }
-    /* 引用 */
-    blockquote {
-      border-left: 3px solid var(--orange);
-      margin: 12px 0;
-      padding: 8px 16px;
-      background: var(--surface);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      color: var(--muted);
-      font-size: 0.95em;
-    }
-    /* 分割线 */
-    hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-    /* 强调 */
-    strong { color: var(--heading); }
-    /* 卡片效果 */
-    .card, h3:has(+ ul) {
-      /* 自动处理 */;
-    }
-    /* 链接 */
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    /* 表格 */
-    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.9em; }
-    th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
-    th { background: var(--surface); color: var(--heading); }
-    /* 加载中 */
-    #loading { color: var(--muted); font-style: italic; }
-    #error { color: #f85149; display: none; }
-    /* 移动端 */
-    @media (max-width: 640px) {
-      body { padding: 16px 12px 48px; font-size: 0.95em; }
-      h1 { font-size: 1.3em; }
-      table { font-size: 0.8em; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 双人任务看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --ink: #2c2318;
+            --muted: #6f5d49;
+            --paper: rgba(252, 244, 229, 0.96);
+            --paper-strong: #f3e6cf;
+            --paper-shadow: rgba(72, 50, 31, 0.22);
+            --accent: #8a5a24;
+            --green: #6f8a43;
+            --orange: #b7772f;
+            --ink-soft: rgba(44, 35, 24, 0.78);
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', 'STSong', 'Noto Serif SC', serif;
+            line-height: 1.8;
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.74), transparent 34%),
+                radial-gradient(circle at bottom right, rgba(165, 122, 69, 0.14), transparent 38%),
+                linear-gradient(180deg, #efe1c5 0%, #ead7b3 40%, #dbc49a 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 100% 6px, 6px 100%;
+            mix-blend-mode: soft-light;
+            opacity: 0.55;
+        }
+
+        .app-shell {
+            width: min(1040px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .masthead {
+            padding: 18px 2px 20px;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 250, 239, 0.65);
+            border: 1px solid rgba(117, 82, 44, 0.18);
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.76rem;
+            box-shadow: 0 10px 24px rgba(120, 89, 54, 0.08);
+            backdrop-filter: blur(6px);
+        }
+
+        h1 {
+            color: #3a2817;
+            font-size: clamp(2rem, 4vw, 3.1rem);
+            line-height: 1.08;
+            margin: 14px 0 10px;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .subtitle {
+            max-width: 680px;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 250, 242, 0.82);
+            border: 1px solid rgba(119, 84, 45, 0.15);
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+            box-shadow: 0 8px 18px rgba(116, 85, 49, 0.08);
+        }
+
+        .paper-panel {
+            position: relative;
+            background: var(--paper);
+            border: 1px solid rgba(119, 84, 45, 0.18);
+            border-radius: var(--radius);
+            box-shadow:
+                0 28px 70px var(--paper-shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+
+        .paper-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0)),
+                linear-gradient(90deg, rgba(123, 87, 49, 0.03), transparent 24%, transparent 76%, rgba(123, 87, 49, 0.03));
+            pointer-events: none;
+        }
+
+        #loading,
+        #error {
+            position: relative;
+            z-index: 1;
+            padding: 22px 24px 18px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        #error {
+            display: none;
+            color: #8d3a25;
+        }
+
+        #content {
+            position: relative;
+            z-index: 1;
+            padding: 22px 24px 28px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        body.is-ready #content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .markdown-body {
+            color: var(--ink);
+            font-size: 1.02rem;
+        }
+
+        .markdown-body>*+* {
+            margin-top: 14px;
+        }
+
+        .markdown-body h2,
+        .markdown-body h3,
+        .markdown-body h4 {
+            color: #3b2918;
+            letter-spacing: 0.01em;
+        }
+
+        .markdown-body h3 {
+            font-size: 1.1rem;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .section-card {
+            background: linear-gradient(180deg, rgba(255, 251, 244, 0.9), rgba(248, 237, 218, 0.9));
+            border: 1px solid rgba(123, 87, 49, 0.16);
+            border-radius: 18px;
+            padding: 18px 18px 16px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .section-card+.section-card {
+            margin-top: 16px;
+        }
+
+        .section-card>h3 {
+            margin-bottom: 10px;
+        }
+
+        .section-card>ul {
+            margin: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul ul {
+            padding-left: 18px;
+            margin-top: 6px;
+        }
+
+        li {
+            position: relative;
+            padding: 6px 0 6px 26px;
+        }
+
+        li:has(input[type="checkbox"]) {
+            padding-left: 28px;
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid rgba(123, 87, 49, 0.4);
+            border-radius: 4px;
+            background: linear-gradient(180deg, #fffdf8, #f3e8d1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            cursor: default;
+        }
+
+        input[type="checkbox"]:checked {
+            background: linear-gradient(180deg, #8aa35b, #738a45);
+            border-color: #738a45;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            left: 2px;
+            top: -2px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        code {
+            background: rgba(244, 232, 208, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #8a5a24;
+            border: 1px solid rgba(123, 87, 49, 0.18);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--orange);
+            margin: 14px 0;
+            padding: 12px 16px;
+            background: rgba(247, 235, 214, 0.88);
+            border-radius: 0 14px 14px 0;
+            color: var(--muted);
+            font-size: 0.96em;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid rgba(111, 93, 73, 0.2);
+            margin: 24px 0;
+        }
+
+        strong {
+            color: #3d2a18;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(138, 90, 36, 0.32);
+        }
+
+        a:hover {
+            border-bottom-color: currentColor;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0;
+            font-size: 0.92em;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: inset 0 0 0 1px rgba(123, 87, 49, 0.12);
+        }
+
+        th,
+        td {
+            border: 1px solid rgba(123, 87, 49, 0.14);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--paper-strong);
+            color: #3a2817;
+        }
+
+        @media (max-width: 640px) {
+            .app-shell {
+                width: min(100% - 18px, 100%);
+                padding: 12px 0 36px;
+            }
+
+            .masthead {
+                padding: 14px 2px 16px;
+            }
+
+            #content {
+                padding: 18px 16px 22px;
+            }
+
+            .section-card {
+                padding: 16px 14px 14px;
+                border-radius: 16px;
+            }
+
+            .subtitle {
+                font-size: 0.96rem;
+            }
+
+            table {
+                font-size: 0.82em;
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div id="loading">⏳ 加载中...</div>
-  <div id="error"></div>
-  <div id="content"></div>
+    <main class="app-shell">
+        <header class="masthead">
+            <div class="eyebrow">TaskHepler · 纸张档案</div>
+            <h1>📋 双人任务看板</h1>
+            <p class="subtitle">聪明蛋三三中午在吃什么？</p>
+            <div class="meta-row">
+                <span class="chip" id="date-chip"></span>
+                <span class="chip">每日自动刷新</span>
+            </div>
+        </header>
 
-  <script>
-    (async () => {
-      const loading = document.getElementById('loading');
-      const error = document.getElementById('error');
-      const content = document.getElementById('content');
+        <section class="paper-panel" aria-live="polite">
+            <div id="loading">⏳ 正在展开纸页...</div>
+            <div id="error"></div>
+            <div id="content"></div>
+        </section>
+    </main>
 
-      try {
-        // 禁用缓存，每次加载最新内容
-        const ts = Date.now();
-        const resp = await fetch(`KANBAN.md?t=${ts}`);
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        let md = await resp.text();
+    <script>
+        (async () => {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('content');
+            const dateChip = document.getElementById('date-chip');
 
-        // 兼容 Windows 换行符
-        md = md.replace(/\r\n/g, '\n');
+            dateChip.textContent = new Intl.DateTimeFormat('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'long'
+            }).format(new Date());
 
-        // 配置 marked
-        marked.setOptions({
-          breaks: false,
-          gfm: true
-        });
+            try {
+                const ts = Date.now();
+                const resp = await fetch(`KANBAN.md?t=${ts}`);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-        const html = marked.parse(md);
-        content.innerHTML = html;
-        loading.style.display = 'none';
+                let md = await resp.text();
+                md = md.replace(/\r\n/g, '\n');
 
-      } catch (e) {
-        loading.style.display = 'none';
-        error.style.display = 'block';
-        error.textContent = '⚠️ 无法加载看板内容: ' + e.message;
-      }
-    })();
-  </script>
+                marked.setOptions({
+                    breaks: false,
+                    gfm: true
+                });
+
+                content.innerHTML = marked.parse(md);
+                content.classList.add('markdown-body');
+
+                content.querySelectorAll('h3').forEach((heading) => {
+                    const list = heading.nextElementSibling;
+                    if (!list || list.tagName !== 'UL') return;
+
+                    const section = document.createElement('section');
+                    section.className = 'section-card';
+                    heading.parentNode.insertBefore(section, heading);
+                    section.appendChild(heading);
+                    section.appendChild(list);
+                });
+
+                loading.style.display = 'none';
+                document.body.classList.add('is-ready');
+            } catch (e) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = '⚠️ 无法加载看板内容: ' + e.message;
+            }
+        })();
+    </script>
 </body>
+
 </html>
