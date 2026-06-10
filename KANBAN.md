@@ -1,18 +1,16 @@
 # 📅 2026.06.10（周三）任务看板
 
+> 🔓 今日自由安排，仅晚间有空。
+
 ### 👩‍💼 聪明蛋三三
-- 🎯 **核心目标**: 工具广场 — 让 Agent 学会调外部工具
-- [ ] **Agent Lab Day 7**: 写 Weather Tool + Search Tool，注册到 Agent
-- [ ] **算法**: ④ 三数之和 ⑤ 接雨水
-- [ ] **八股**: Function Calling 机制 — Tool Schema 怎么写、LLM 怎么决定调哪个
+- 🎯 **核心目标**: 自由
+- [ ] 有余力就回顾 Agent Lab Day 6 的代码
 
 ### 🧑‍💻 人机^^
-- 🎯 **核心目标**: 普通数组 + 矩阵 7 题 + 多线程收尾
-- [ ] 课题配套软件（上午 2h）
-- [ ] **LC Day 4**: `#189` `#238` `#41` `#73` `#54` `#48` `#240`
-- [ ] **Java 八股 Day 4**: synchronized 锁升级 / ReentrantLock + AQS / volatile + CAS
+- 🎯 **核心目标**: 自由
+- [ ] 有余力就推一点 Agent Lab 进度
 
-> 下次验证：周六下午。
+> 明日（周四）恢复正常节奏。
 
 ---
 
@@ -28,9 +26,9 @@ def three_sum(nums):
     n = len(nums)
     res = []
     for i in range(n - 2):
-        if nums[i] > 0:            # 第一个数 > 0，后面不可能凑出 0
+        if nums[i] > 0:
             break
-        if i > 0 and nums[i] == nums[i - 1]:  # 跳过重复
+        if i > 0 and nums[i] == nums[i - 1]:
             continue
         left, right = i + 1, n - 1
         while left < right:
@@ -43,9 +41,9 @@ def three_sum(nums):
                 res.append([nums[i], nums[left], nums[right]])
                 left += 1
                 right -= 1
-                while left < right and nums[left] == nums[left - 1]:   # 跳过重复
+                while left < right and nums[left] == nums[left - 1]:
                     left += 1
-                while left < right and nums[right] == nums[right + 1]: # 跳过重复
+                while left < right and nums[right] == nums[right + 1]:
                     right -= 1
     return res
 
