@@ -96,11 +96,43 @@
             font-size: 1rem;
         }
 
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin: 12px 0 0;
+        }
+
+        .nav-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(123, 87, 49, 0.22);
+            background: rgba(255, 250, 242, 0.7);
+            color: var(--muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent);
+            color: var(--ink);
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 252, 246, 0.95);
+            border-color: var(--accent);
+            color: var(--ink);
+            font-weight: 600;
+            box-shadow: 0 2px 12px rgba(120, 89, 54, 0.12);
+        }
+
         .meta-row {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 16px;
+            margin-top: 10px;
         }
 
         .chip {
@@ -356,10 +388,14 @@
         <header class="masthead">
             <div class="eyebrow">TaskHepler · 纸张档案</div>
             <h1>📋 双人任务看板</h1>
-            <p class="subtitle">聪明蛋三三中午在吃什么？</p>
+            <p class="subtitle" id="subtitle-text">聪明蛋三三中午在吃什么？</p>
+            <nav class="nav-bar">
+                <button class="nav-btn active" data-src="KANBAN.md" data-label="今日">📅 今天</button>
+                <button class="nav-btn" data-src="PREV.md" data-label="昨日">📆 前一天</button>
+            </nav>
             <div class="meta-row">
                 <span class="chip" id="date-chip"></span>
-                <span class="chip">每日自动刷新</span>
+                <span class="chip" id="view-chip">📅 今天</span>
             </div>
         </header>
 
@@ -371,11 +407,19 @@
     </main>
 
     <script>
-        (async () => {
+        (() => {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const content = document.getElementById('content');
             const dateChip = document.getElementById('date-chip');
+            const viewChip = document.getElementById('view-chip');
+            const subtitleText = document.getElementById('subtitle-text');
+            const navBtns = document.querySelectorAll('.nav-btn');
+
+            const SUBTITLES = {
+                'KANBAN.md': '聪明蛋三三中午在吃什么？',
+                'PREV.md': '📆 前一天 · 已标记的任务看板'
+            };
 
             dateChip.textContent = new Intl.DateTimeFormat('zh-CN', {
                 year: 'numeric',
@@ -384,40 +428,57 @@
                 weekday: 'long'
             }).format(new Date());
 
-            try {
-                const ts = Date.now();
-                const resp = await fetch(`KANBAN.md?t=${ts}`);
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            async function loadKanban(src) {
+                loading.style.display = 'block';
+                loading.textContent = '⏳ 正在展开纸页...';
+                error.style.display = 'none';
+                document.body.classList.remove('is-ready');
 
-                let md = await resp.text();
-                md = md.replace(/\r\n/g, '\n');
+                try {
+                    const ts = Date.now();
+                    const resp = await fetch(`${src}?t=${ts}`);
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-                marked.setOptions({
-                    breaks: false,
-                    gfm: true
-                });
+                    let md = await resp.text();
+                    md = md.replace(/\r\n/g, '\n');
 
-                content.innerHTML = marked.parse(md);
-                content.classList.add('markdown-body');
+                    marked.setOptions({ breaks: false, gfm: true });
 
-                content.querySelectorAll('h3').forEach((heading) => {
-                    const list = heading.nextElementSibling;
-                    if (!list || list.tagName !== 'UL') return;
+                    content.innerHTML = marked.parse(md);
+                    content.classList.add('markdown-body');
 
-                    const section = document.createElement('section');
-                    section.className = 'section-card';
-                    heading.parentNode.insertBefore(section, heading);
-                    section.appendChild(heading);
-                    section.appendChild(list);
-                });
+                    content.querySelectorAll('h3').forEach((heading) => {
+                        const list = heading.nextElementSibling;
+                        if (!list || list.tagName !== 'UL') return;
+                        const section = document.createElement('section');
+                        section.className = 'section-card';
+                        heading.parentNode.insertBefore(section, heading);
+                        section.appendChild(heading);
+                        section.appendChild(list);
+                    });
 
-                loading.style.display = 'none';
-                document.body.classList.add('is-ready');
-            } catch (e) {
-                loading.style.display = 'none';
-                error.style.display = 'block';
-                error.textContent = '⚠️ 无法加载看板内容: ' + e.message;
+                    loading.style.display = 'none';
+                    document.body.classList.add('is-ready');
+                } catch (e) {
+                    loading.style.display = 'none';
+                    error.style.display = 'block';
+                    error.textContent = '⚠️ 无法加载看板: ' + e.message;
+                }
             }
+
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const src = btn.dataset.src;
+                    const label = btn.dataset.label;
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    viewChip.textContent = '📅 ' + label;
+                    subtitleText.textContent = SUBTITLES[src] || '';
+                    loadKanban(src);
+                });
+            });
+
+            loadKanban('KANBAN.md');
         })();
     </script>
 </body>
