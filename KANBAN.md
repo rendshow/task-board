@@ -1,10 +1,10 @@
-# 📅 2026.06.17（周三）任务看板
+# 📅 2026.06.18（周四）任务看板
 
 ### 👩‍💼 聪明蛋三三
-- 🎯 **核心目标**: RAG 向量检索 + 算法恢复
-- [ ] **Agent Lab Day 9**: RAG（下）ChromaDB + Embedding 建索引
-- [ ] **算法**: ④ 三数之和 ⑤ 接雨水
-- [ ] **八股**: 向量检索 — 余弦相似度 / Top-K / HNSW 概念
+- 🎯 **核心目标**: RAG 问答链路 + 算法
+- [ ] **Agent Lab Day 10**: RAG 问答 — 检索 → 拼接 → 生成
+- [ ] **算法**: ⑥ 存在重复元素 ⑦ 字母异位词分组
+- [ ] **八股**: RAG 全链路 — Embedding → 检索 → 重排 → 生成
 
 ### 🧑‍💻 人机^^
 - 🎯 **核心目标**: 回溯 + MySQL 索引 + Memory
@@ -19,65 +19,35 @@
 
 ## 算法 ACM 示例（Python）
 
-### 15. 三数之和
+### 217. 存在重复元素
 
 ```python
-def three_sum(nums):
-    nums.sort()
-    n = len(nums)
-    res = []
-    for i in range(n - 2):
-        if nums[i] > 0:
-            break
-        if i > 0 and nums[i] == nums[i - 1]:
-            continue
-        left, right = i + 1, n - 1
-        while left < right:
-            total = nums[i] + nums[left] + nums[right]
-            if total < 0:
-                left += 1
-            elif total > 0:
-                right -= 1
-            else:
-                res.append([nums[i], nums[left], nums[right]])
-                left += 1
-                right -= 1
-                while left < right and nums[left] == nums[left - 1]:
-                    left += 1
-                while left < right and nums[right] == nums[right + 1]:
-                    right -= 1
-    return res
+def contains_duplicate(nums):
+    seen = set()
+    for x in nums:
+        if x in seen:
+            return True
+        seen.add(x)
+    return False
 
 # 测试
-print(three_sum([-1, 0, 1, 2, -1, -4]))
-# [[-1, -1, 2], [-1, 0, 1]]
+print(contains_duplicate([1, 2, 3, 1]))              # True
+print(contains_duplicate([1, 2, 3, 4]))              # False
 ```
 
-### 42. 接雨水（双指针）
+### 49. 字母异位词分组
 
 ```python
-def trap(height):
-    if not height:
-        return 0
-    left, right = 0, len(height) - 1
-    left_max = right_max = 0
-    water = 0
-    while left < right:
-        if height[left] < height[right]:
-            if height[left] >= left_max:
-                left_max = height[left]
-            else:
-                water += left_max - height[left]
-            left += 1
-        else:
-            if height[right] >= right_max:
-                right_max = height[right]
-            else:
-                water += right_max - height[right]
-            right -= 1
-    return water
+from collections import defaultdict
+
+def group_anagrams(strs):
+    groups = defaultdict(list)
+    for s in strs:
+        key = ''.join(sorted(s))
+        groups[key].append(s)
+    return list(groups.values())
 
 # 测试
-print(trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))
-# 6
+print(group_anagrams(["eat", "tea", "tan", "ate", "nat", "bat"]))
+# [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]
 ```
