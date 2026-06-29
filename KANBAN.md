@@ -1,23 +1,56 @@
-# 📅 2026.06.23（周二）任务看板
+# 📅 2026.06.29（周一）任务看板
 
 ### 👩‍💼 聪明蛋三三
-- 🎯 **核心目标**: 开会 + Agent Lab Day 11
-- [ ] 上午开会
-- [ ] **Agent Lab Day 11**: 混合检索 — BM25 + 向量检索融合
-- [ ] **八股**: 混合检索架构 — 多路召回 → 融合 → 重排管道
+- 🎯 **核心目标**: Memory + 算法
+- [ ] **Agent Lab Day 12**: Memory（上）— SQLite 存对话历史
+- [ ] **算法**: ⑧ 有效的字母异位词 ⑨ 无重复字符的最长子串
+- [ ] **八股**: Memory 类型体系 — 感官记忆 / 工作记忆 / 长期记忆
 
 ### 🧑‍💻 人机^^
-- 🎯 **核心目标**: 栈 + Redis + SSE
-- [ ] **LC Day 11**: 2 题 — 每日温度 / 字符串解码
-- [ ] **Java 八股 Day 11**: Redis（上）— 数据结构底层 / 跳表 / 渐进式 rehash / 缓存穿透击穿雪崩
-- [ ] **Agent Lab Day 14**: SSE 流式输出 — FastAPI StreamingResponse，打字机效果
-- [ ] **Agent 八股**: Python 协程 — yield / async-await / 生成器 / FastAPI 异步原理
+- 🎯 **核心目标**: 复习 Agent Lab + Agent 八股
+- [ ] 复习 Agent Lab 项目
+- [ ] 自己找 Agent 相关八股看
 
 > 下次验证：周六下午。
 
 ---
 
-> 🥶 **今日冷笑话**
->
-> 面试官："你简历上写的'精通缓存'，能具体说说吗？"
-> 程序员："每当老板问我进度，我就说'快了快了'，其实根本还没开始。这叫缓存穿透——请求直接打到数据库，缓存里啥也没有。"
+## 算法 ACM 示例（Python）
+
+### 242. 有效的字母异位词
+
+```python
+def is_anagram(s, t):
+    if len(s) != len(t):
+        return False
+    count = [0] * 26
+    for i in range(len(s)):
+        count[ord(s[i]) - ord('a')] += 1
+        count[ord(t[i]) - ord('a')] -= 1
+    return all(c == 0 for c in count)
+
+# 测试
+print(is_anagram("anagram", "nagaram"))  # True
+print(is_anagram("rat", "car"))          # False
+```
+
+### 3. 无重复字符的最长子串
+
+```python
+def length_of_longest_substring(s):
+    seen = set()
+    left = 0
+    max_len = 0
+    for right in range(len(s)):
+        while s[right] in seen:
+            seen.remove(s[left])
+            left += 1
+        seen.add(s[right])
+        max_len = max(max_len, right - left + 1)
+    return max_len
+
+# 测试
+print(length_of_longest_substring("abcabcbb"))  # 3
+print(length_of_longest_substring("bbbbb"))     # 1
+print(length_of_longest_substring("pwwkew"))    # 3
+```
