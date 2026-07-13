@@ -2,7 +2,7 @@
 
 ### 👩‍💼 聪明蛋三三
 - 🎯 **核心目标**: Day 14 + 线上实习
-- [ ] **Agent Lab Day 14**: SSE 流式输出 — FastAPI `StreamingResponse` + Gradio 生成器接收，实现打字机效果
+- [ ] **Agent Lab Day 15**: MCP 入门 — 理解 MCP 协议 Client-Server-Transport 三层架构，连接一个 MCP Server
 - [ ] 线上实习
 
 ### 🧑‍💻 人机^^
