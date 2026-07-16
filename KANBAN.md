@@ -4,7 +4,7 @@
 - 🎯 **核心目标**: MCP + 下一天内容
 - [ ] **Agent Lab Day 15**: MCP 入门 — 理解协议架构，连接 MCP Server
 - [ ] **Agent Lab Day 16**: MCP Agent — Agent 通过 MCP 调用外部工具
-- [ ] 线上实习
+- [ ] 线上实习（学习实习要求的 Agent）
 
 ### 🧑‍💻 人机^^
 - 🎯 **核心目标**: archives-online 数据收集
