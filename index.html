@@ -354,6 +354,256 @@
             color: #3a2817;
         }
 
+        .stale-banner {
+            display: none;
+            position: relative;
+            z-index: 2;
+            margin: 18px 24px 0;
+            padding: 12px 16px;
+            border: 1px solid rgba(183, 119, 47, 0.3);
+            border-radius: 14px;
+            background: rgba(255, 239, 204, 0.88);
+            color: #704a23;
+            font-size: 0.94rem;
+        }
+
+        .stale-banner.is-visible {
+            display: block;
+        }
+
+        .paper-panel.aquarium-mode {
+            background: rgba(19, 80, 105, 0.42);
+            border-color: rgba(215, 249, 255, 0.28);
+            box-shadow: 0 28px 70px rgba(12, 54, 75, 0.28);
+        }
+
+        .aquarium {
+            position: relative;
+            min-height: 650px;
+            overflow: hidden;
+            color: #ecfbff;
+            background:
+                radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.3), transparent 18%),
+                linear-gradient(180deg, #55c5d2 0%, #1685a2 43%, #075574 100%);
+            transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        .aquarium[hidden] {
+            display: none;
+        }
+
+        .aquarium::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(112deg, transparent 0 54px, rgba(255, 255, 255, 0.08) 55px 62px, transparent 63px 112px),
+                radial-gradient(ellipse at 50% 105%, rgba(229, 201, 128, 0.78) 0 13%, transparent 35%);
+            opacity: 0.75;
+        }
+
+        .aquarium.is-night {
+            background:
+                radial-gradient(circle at 82% 10%, rgba(196, 230, 255, 0.25), transparent 14%),
+                linear-gradient(180deg, #183a69 0%, #0a345b 44%, #03233d 100%);
+        }
+
+        .aquarium.is-night::before {
+            opacity: 0.45;
+        }
+
+        .aquarium-top {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 24px;
+        }
+
+        .aquarium-title {
+            font-size: clamp(1.45rem, 3vw, 2rem);
+            line-height: 1.2;
+            margin-bottom: 8px;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0, 43, 67, 0.4);
+        }
+
+        .aquarium-status {
+            max-width: 620px;
+            color: rgba(235, 252, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .aquarium-meta {
+            margin-top: 8px;
+            color: rgba(224, 248, 255, 0.76);
+            font-size: 0.88rem;
+        }
+
+        .aquarium-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 210px;
+        }
+
+        .water-btn {
+            border: 1px solid rgba(225, 251, 255, 0.36);
+            border-radius: 999px;
+            padding: 8px 13px;
+            color: #effdff;
+            background: rgba(4, 60, 88, 0.28);
+            font: inherit;
+            font-size: 0.86rem;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .water-btn:hover,
+        .water-btn:focus-visible {
+            transform: translateY(-2px);
+            background: rgba(4, 60, 88, 0.48);
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        .aquarium-scene {
+            position: relative;
+            min-height: 470px;
+            margin-top: -16px;
+        }
+
+        .resident {
+            position: absolute;
+            z-index: 3;
+            left: var(--x);
+            top: var(--y);
+            width: 52px;
+            height: 52px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            font-size: var(--size, 2rem);
+            line-height: 1;
+            cursor: pointer;
+            filter: drop-shadow(0 5px 6px rgba(0, 34, 54, 0.3));
+            animation: water-drift var(--duration, 7s) ease-in-out var(--delay, 0s) infinite alternate;
+            transition: filter 0.2s;
+        }
+
+        .resident:hover,
+        .resident:focus-visible {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+            outline: 2px solid rgba(255, 255, 255, 0.72);
+            outline-offset: 3px;
+        }
+
+        .resident.is-talking {
+            animation: creature-pop 0.45s ease, water-drift var(--duration, 7s) ease-in-out var(--delay, 0s) infinite alternate;
+        }
+
+        .resident.facing-left {
+            transform: scaleX(-1);
+        }
+
+        .resident.record-star {
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 0 8px rgba(255, 236, 142, 0.8));
+            transition: opacity 0.5s;
+        }
+
+        .aquarium.is-night .resident.record-star {
+            opacity: 1;
+        }
+
+        .decorative-bubble {
+            position: absolute;
+            z-index: 1;
+            left: var(--x);
+            bottom: -30px;
+            width: var(--size);
+            height: var(--size);
+            border: 1px solid rgba(222, 251, 255, 0.58);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            animation: bubble-rise var(--duration) linear var(--delay) infinite;
+        }
+
+        .joke-bubble {
+            position: absolute;
+            z-index: 8;
+            left: 50%;
+            top: 42%;
+            width: min(430px, calc(100% - 38px));
+            padding: 14px 18px;
+            transform: translate(-50%, -50%) scale(0.92);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 20px;
+            background: rgba(244, 253, 255, 0.94);
+            color: #164d64;
+            box-shadow: 0 14px 38px rgba(0, 43, 67, 0.24);
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .joke-bubble.is-visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .seabed {
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 94px;
+            background:
+                radial-gradient(ellipse at 8% 90%, #2f9878 0 7%, transparent 8%),
+                radial-gradient(ellipse at 90% 96%, #27866e 0 9%, transparent 10%),
+                linear-gradient(180deg, transparent 0 36%, rgba(218, 184, 113, 0.84) 37% 100%);
+        }
+
+        @keyframes water-drift {
+            from {
+                translate: -12px -7px;
+                rotate: -3deg;
+            }
+            to {
+                translate: 18px 9px;
+                rotate: 4deg;
+            }
+        }
+
+        @keyframes creature-pop {
+            50% {
+                scale: 1.3;
+            }
+        }
+
+        @keyframes bubble-rise {
+            from {
+                translate: 0 0;
+                opacity: 0;
+            }
+            12% {
+                opacity: 0.8;
+            }
+            to {
+                translate: 18px -620px;
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 640px) {
             .app-shell {
                 width: min(100% - 18px, 100%);
@@ -377,10 +627,58 @@
                 font-size: 0.96rem;
             }
 
+            .nav-bar {
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                flex: 1 1 auto;
+                padding: 8px 11px;
+            }
+
+            .stale-banner {
+                margin: 14px 14px 0;
+            }
+
+            .aquarium {
+                min-height: 620px;
+            }
+
+            .aquarium-top {
+                display: block;
+                padding: 20px 16px;
+            }
+
+            .aquarium-actions {
+                justify-content: flex-start;
+                margin-top: 14px;
+            }
+
+            .aquarium-scene {
+                min-height: 450px;
+            }
+
+            .resident {
+                width: 44px;
+                height: 44px;
+                font-size: min(var(--size, 1.8rem), 1.9rem);
+            }
+
             table {
                 font-size: 0.82em;
                 display: block;
                 overflow-x: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -393,8 +691,9 @@
             <h1>📋 双人任务看板</h1>
             <p class="subtitle" id="subtitle-text">聪明蛋三三中午在吃什么？</p>
             <nav class="nav-bar">
-                <button class="nav-btn active" data-src="KANBAN.md" data-label="今日">📅 今天</button>
-                <button class="nav-btn" data-src="PREV.md" data-label="昨日">📆 前一天</button>
+                <button class="nav-btn active" data-view="today">📅 今天</button>
+                <button class="nav-btn" data-view="previous">📆 前一天</button>
+                <button class="nav-btn" data-view="aquarium">🦐 摸鱼水族馆</button>
             </nav>
             <div class="meta-row">
                 <span class="chip" id="date-chip"></span>
@@ -405,7 +704,25 @@
         <section class="paper-panel" aria-live="polite">
             <div id="loading">⏳ 正在展开纸页...</div>
             <div id="error"></div>
+            <div class="stale-banner" id="stale-banner"></div>
             <div id="content"></div>
+            <section class="aquarium" id="aquarium" hidden aria-label="摸鱼水族馆">
+                <div class="aquarium-top">
+                    <div>
+                        <h2 class="aquarium-title">🦐 摸鱼水族馆</h2>
+                        <p class="aquarium-status" id="aquarium-status"></p>
+                        <p class="aquarium-meta" id="aquarium-meta"></p>
+                    </div>
+                    <div class="aquarium-actions">
+                        <button class="water-btn" id="theme-toggle" type="button">🌙 预览夜景</button>
+                        <button class="water-btn" id="return-board" type="button">📋 查看今日看板</button>
+                    </div>
+                </div>
+                <div class="aquarium-scene" id="aquarium-scene">
+                    <div class="joke-bubble" id="joke-bubble" role="status" aria-live="polite"></div>
+                    <div class="seabed" aria-hidden="true"></div>
+                </div>
+            </section>
         </section>
     </main>
 
@@ -417,51 +734,382 @@
             const dateChip = document.getElementById('date-chip');
             const viewChip = document.getElementById('view-chip');
             const subtitleText = document.getElementById('subtitle-text');
+            const staleBanner = document.getElementById('stale-banner');
+            const panel = document.querySelector('.paper-panel');
+            const aquarium = document.getElementById('aquarium');
+            const aquariumScene = document.getElementById('aquarium-scene');
+            const aquariumStatus = document.getElementById('aquarium-status');
+            const aquariumMeta = document.getElementById('aquarium-meta');
+            const jokeBubble = document.getElementById('joke-bubble');
+            const themeToggle = document.getElementById('theme-toggle');
+            const returnBoard = document.getElementById('return-board');
             const navBtns = document.querySelectorAll('.nav-btn');
 
             const SUBTITLES = {
-                'KANBAN.md': '聪明蛋三三中午在吃什么？',
-                'PREV.md': '📆 前一天 · 已标记的任务看板'
+                today: '聪明蛋三三中午在吃什么？',
+                previous: '📆 前一天 · 已标记的任务看板',
+                aquarium: '今天也可以来海底喘口气。'
             };
 
-            dateChip.textContent = new Intl.DateTimeFormat('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                weekday: 'long'
-            }).format(new Date());
+            const VIEW_LABELS = {
+                today: '📅 今天',
+                previous: '📆 前一天',
+                aquarium: '🦐 水族馆'
+            };
 
-            async function loadKanban(src) {
+            const JOKES = [
+                '虾说今天不加班，因为它只会加盐。',
+                '螃蟹为什么横着走？因为它有钳，所以任性。',
+                '今天没有 deadline，只有海岸线。',
+                '章鱼有八只手，却还是不想接八个任务。',
+                '水母没有脑子，照样活得很通透。',
+                '海星说：别催，我正在努力发光。',
+                '鱼群开会的结论是：这个需求先沉一沉。',
+                '寄居蟹搬家不写周报，因为它自带房报。',
+                '摸鱼不是暂停工作，是让灵感换个泳姿。',
+                '虾兵请假了，蟹将正在代打卡。',
+                '今天适合把烦恼交给潮汐处理。',
+                '你点到的不是海鲜，是一张免内耗签。'
+            ];
+
+            const BASE_RESIDENTS = [
+                ['🐠', '小丑鱼', 8, 24, 2.15, 7.2, -1.1, false],
+                ['🐟', '蓝色小鱼', 25, 34, 1.95, 8.4, -3.2, true],
+                ['🐠', '珊瑚鱼', 44, 18, 2.1, 6.8, -2.4, false],
+                ['🐟', '慢游小鱼', 62, 39, 1.85, 9.2, -4.6, true],
+                ['🐠', '巡游小鱼', 77, 25, 2.05, 7.8, -0.8, false],
+                ['🐟', '深水小鱼', 88, 48, 1.9, 8.8, -5.1, true],
+                ['🦐', '小虾', 18, 68, 2.05, 6.6, -2.1, false],
+                ['🦐', '虾兵', 70, 73, 2.15, 7.6, -4.1, true],
+                ['🦀', '螃蟹', 34, 80, 2.25, 6.9, -1.7, false],
+                ['🦀', '蟹将', 82, 84, 2.2, 8.1, -3.5, false],
+                ['🪼', '水母', 12, 45, 2.35, 9.4, -2.8, false],
+                ['🐙', '章鱼', 53, 66, 2.3, 7.3, -4.4, false],
+                ['⭐', '海星', 58, 88, 2, 8.6, -1.3, false]
+            ];
+
+            const state = {
+                todayMarkdown: '',
+                boardDate: null,
+                daysLate: 0,
+                currentView: 'today',
+                autoTransition: false,
+                manualTheme: null,
+                residentsBuiltForDays: null,
+                bubbleTimer: null,
+                ready: false
+            };
+
+            function shanghaiParts(date = new Date()) {
+                const parts = new Intl.DateTimeFormat('en-CA', {
+                    timeZone: 'Asia/Shanghai',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hourCycle: 'h23'
+                }).formatToParts(date).reduce((result, part) => {
+                    if (part.type !== 'literal') result[part.type] = Number(part.value);
+                    return result;
+                }, {});
+                parts.key = `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
+                return parts;
+            }
+
+            function dayNumber(dateParts) {
+                return Math.floor(Date.UTC(dateParts.year, dateParts.month - 1, dateParts.day) / 86400000);
+            }
+
+            function parseBoardDate(markdown) {
+                const match = markdown.match(/^#.*?(\d{4})[.\-/](\d{2})[.\-/](\d{2})/m);
+                if (!match) return null;
+                const parsed = {
+                    year: Number(match[1]),
+                    month: Number(match[2]),
+                    day: Number(match[3])
+                };
+                const probe = new Date(Date.UTC(parsed.year, parsed.month - 1, parsed.day));
+                if (
+                    probe.getUTCFullYear() !== parsed.year ||
+                    probe.getUTCMonth() + 1 !== parsed.month ||
+                    probe.getUTCDate() !== parsed.day
+                ) return null;
+                parsed.key = `${match[1]}-${match[2]}-${match[3]}`;
+                return parsed;
+            }
+
+            function formatBoardDate() {
+                if (!state.boardDate) return '日期未知';
+                return `${state.boardDate.year}.${String(state.boardDate.month).padStart(2, '0')}.${String(state.boardDate.day).padStart(2, '0')}`;
+            }
+
+            function isBeforeNine(now = shanghaiParts()) {
+                return now.hour < 9;
+            }
+
+            function updateDateChip() {
+                dateChip.textContent = new Intl.DateTimeFormat('zh-CN', {
+                    timeZone: 'Asia/Shanghai',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    weekday: 'long'
+                }).format(new Date());
+            }
+
+            async function fetchMarkdown(src) {
+                const resp = await fetch(`${src}?t=${Date.now()}`);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                return (await resp.text()).replace(/\r\n/g, '\n');
+            }
+
+            function setActiveView(view) {
+                state.currentView = view;
+                navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+                viewChip.textContent = VIEW_LABELS[view];
+                subtitleText.textContent = SUBTITLES[view];
+            }
+
+            function hideMessages() {
+                loading.style.display = 'none';
+                error.style.display = 'none';
+                staleBanner.classList.remove('is-visible');
+            }
+
+            function renderMarkdown(markdown, showStaleNotice = false) {
+                hideMessages();
+                panel.classList.remove('aquarium-mode');
+                aquarium.hidden = true;
+                content.style.display = 'block';
+
+                marked.setOptions({ breaks: false, gfm: true });
+                content.innerHTML = marked.parse(markdown);
+                content.classList.add('markdown-body');
+
+                content.querySelectorAll('h3').forEach((heading) => {
+                    const list = heading.nextElementSibling;
+                    if (!list || list.tagName !== 'UL') return;
+                    const section = document.createElement('section');
+                    section.className = 'section-card';
+                    heading.parentNode.insertBefore(section, heading);
+                    section.appendChild(heading);
+                    section.appendChild(list);
+                });
+
+                if (showStaleNotice) updateStaleBanner();
+                document.body.classList.add('is-ready');
+            }
+
+            function updateStaleBanner() {
+                if (state.currentView !== 'today') {
+                    staleBanner.classList.remove('is-visible');
+                    return;
+                }
+                if (!state.boardDate) {
+                    staleBanner.textContent = '⚠️ 未能从看板标题读取 YYYY.MM.DD 日期，已保留正常看板，不会自动判断缺更。';
+                    staleBanner.classList.add('is-visible');
+                    return;
+                }
+                if (state.daysLate <= 0) {
+                    staleBanner.classList.remove('is-visible');
+                    return;
+                }
+
+                const now = shanghaiParts();
+                if (isBeforeNine(now)) {
+                    const seconds = (9 - now.hour - 1) * 3600 + (59 - now.minute) * 60 + (60 - now.second);
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const secs = seconds % 60;
+                    staleBanner.textContent = `⏰ 当前展示的是 ${formatBoardDate()} 的旧看板。距今日 09:00 还有 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}。`;
+                } else {
+                    staleBanner.textContent = `🫧 当前展示的是 ${formatBoardDate()} 的旧看板；今日 09:00 后仍未更新，首页已进入摸鱼水族馆。`;
+                }
+                staleBanner.classList.add('is-visible');
+            }
+
+            function showToday({ automatic = false } = {}) {
+                setActiveView('today');
+                state.autoTransition = automatic;
+                renderMarkdown(state.todayMarkdown, state.daysLate > 0);
+            }
+
+            async function showPrevious() {
+                setActiveView('previous');
+                state.autoTransition = false;
+                loading.style.display = 'block';
+                loading.textContent = '⏳ 正在翻找前一天的纸页...';
+                error.style.display = 'none';
+                content.style.display = 'none';
+                aquarium.hidden = true;
+                panel.classList.remove('aquarium-mode');
+                try {
+                    renderMarkdown(await fetchMarkdown('PREV.md'), false);
+                } catch (e) {
+                    loading.style.display = 'none';
+                    error.style.display = 'block';
+                    error.textContent = '⚠️ 无法加载前一天看板: ' + e.message;
+                }
+            }
+
+            function createResident([emoji, label, x, y, size, duration, delay, left], extraClass = '') {
+                const resident = document.createElement('button');
+                resident.type = 'button';
+                resident.className = `resident ${left ? 'facing-left' : ''} ${extraClass}`.trim();
+                resident.textContent = emoji;
+                resident.setAttribute('aria-label', `${label}：点击抽取一句海底冷笑话`);
+                resident.style.setProperty('--x', `${x}%`);
+                resident.style.setProperty('--y', `${y}%`);
+                resident.style.setProperty('--size', `${size}rem`);
+                resident.style.setProperty('--duration', `${duration}s`);
+                resident.style.setProperty('--delay', `${delay}s`);
+                if (!extraClass.includes('record-star')) resident.addEventListener('click', () => tellJoke(resident));
+                aquariumScene.appendChild(resident);
+            }
+
+            function buildAquariumResidents() {
+                if (state.residentsBuiltForDays === state.daysLate) return;
+                aquariumScene.querySelectorAll('.resident, .decorative-bubble').forEach(item => item.remove());
+                BASE_RESIDENTS.forEach(resident => createResident(resident));
+
+                const hermitCount = Math.min(Math.max(state.daysLate, 0), 7);
+                for (let i = 0; i < hermitCount; i += 1) {
+                    createResident(
+                        ['🐚', `第 ${i + 1} 只寄居蟹`, 8 + i * 12.4, 89 - (i % 2) * 6, 1.75, 7 + (i % 3), -i * 0.7, i % 2 === 1],
+                        'hermit-crab'
+                    );
+                }
+
+                const starCount = Math.min(Math.max(state.daysLate - 7, 0), 7);
+                for (let i = 0; i < starCount; i += 1) {
+                    createResident(
+                        ['✨', `第 ${i + 1} 颗缺更记录星`, 10 + i * 13, 5 + (i % 3) * 5, 1.3, 4.5 + i * 0.3, -i * 0.5, false],
+                        'record-star'
+                    );
+                }
+
+                for (let i = 0; i < 14; i += 1) {
+                    const bubble = document.createElement('span');
+                    bubble.className = 'decorative-bubble';
+                    bubble.setAttribute('aria-hidden', 'true');
+                    bubble.style.setProperty('--x', `${4 + (i * 17) % 93}%`);
+                    bubble.style.setProperty('--size', `${7 + (i % 4) * 4}px`);
+                    bubble.style.setProperty('--duration', `${7 + (i % 5) * 1.4}s`);
+                    bubble.style.setProperty('--delay', `${-i * 0.9}s`);
+                    aquariumScene.appendChild(bubble);
+                }
+                state.residentsBuiltForDays = state.daysLate;
+            }
+
+            function tellJoke(resident) {
+                const joke = JOKES[Math.floor(Math.random() * JOKES.length)];
+                resident.classList.remove('is-talking');
+                void resident.offsetWidth;
+                resident.classList.add('is-talking');
+                jokeBubble.textContent = joke;
+                jokeBubble.classList.add('is-visible');
+                clearTimeout(state.bubbleTimer);
+                state.bubbleTimer = setTimeout(() => jokeBubble.classList.remove('is-visible'), 4200);
+            }
+
+            function autoThemeIsNight() {
+                const hour = shanghaiParts().hour;
+                return hour >= 18 || hour < 6;
+            }
+
+            function applyAquariumTheme() {
+                const isNight = state.manualTheme ? state.manualTheme === 'night' : autoThemeIsNight();
+                aquarium.classList.toggle('is-night', isNight);
+                themeToggle.textContent = isNight ? '☀️ 预览日景' : '🌙 预览夜景';
+                themeToggle.setAttribute('aria-label', isNight ? '切换到日间水族馆预览' : '切换到夜间水族馆预览');
+            }
+
+            function updateAquariumCopy() {
+                const now = shanghaiParts();
+                if (!state.boardDate) {
+                    aquariumStatus.textContent = '暂时读不到看板日期，今天先自由参观。';
+                    aquariumMeta.textContent = '水族馆不会据此判断缺更。';
+                    return;
+                }
+                if (state.daysLate <= 0) {
+                    aquariumStatus.textContent = '今日看板已更新，来水族馆是自愿摸鱼。';
+                    aquariumMeta.textContent = `看板日期 ${formatBoardDate()} · 常驻居民正在营业`;
+                } else if (isBeforeNine(now)) {
+                    aquariumStatus.textContent = '今日看板还在起床，09:00 前先来海底喘口气。';
+                    aquariumMeta.textContent = `上次更新 ${formatBoardDate()} · 已相隔 ${state.daysLate} 天`;
+                } else {
+                    aquariumStatus.textContent = '截至今日 09:00，新的任务看板尚未靠岸。';
+                    aquariumMeta.textContent = `上次更新 ${formatBoardDate()} · 已相隔 ${state.daysLate} 天 · 寄居蟹 ${Math.min(state.daysLate, 7)} 只 · 记录星 ${Math.min(Math.max(state.daysLate - 7, 0), 7)} 颗`;
+                }
+            }
+
+            function showAquarium() {
+                setActiveView('aquarium');
+                state.autoTransition = false;
+                hideMessages();
+                content.style.display = 'none';
+                aquarium.hidden = false;
+                panel.classList.add('aquarium-mode');
+                buildAquariumResidents();
+                updateAquariumCopy();
+                applyAquariumTheme();
+                document.body.classList.add('is-ready');
+            }
+
+            function showView(view, pushHistory = false) {
+                if (!state.ready && view !== 'aquarium') return;
+                if (pushHistory) {
+                    const url = view === 'aquarium'
+                        ? `${location.pathname}${location.search}#aquarium`
+                        : `${location.pathname}${location.search}`;
+                    history.pushState({ view }, '', url);
+                }
+                if (view === 'aquarium') showAquarium();
+                else if (view === 'previous') showPrevious();
+                else showToday({ automatic: false });
+            }
+
+            function defaultView() {
+                if (location.hash === '#aquarium') return 'aquarium';
+                if (state.boardDate && state.daysLate > 0 && !isBeforeNine()) return 'aquarium';
+                return 'today';
+            }
+
+            function updateClockDrivenState() {
+                updateDateChip();
+                if (state.currentView === 'today') updateStaleBanner();
+                if (state.currentView === 'aquarium') {
+                    updateAquariumCopy();
+                    if (!state.manualTheme) applyAquariumTheme();
+                }
+                if (
+                    state.ready &&
+                    state.autoTransition &&
+                    state.currentView === 'today' &&
+                    state.daysLate > 0 &&
+                    !isBeforeNine()
+                ) showAquarium();
+            }
+
+            async function initialize() {
                 loading.style.display = 'block';
                 loading.textContent = '⏳ 正在展开纸页...';
                 error.style.display = 'none';
                 document.body.classList.remove('is-ready');
 
                 try {
-                    const ts = Date.now();
-                    const resp = await fetch(`${src}?t=${ts}`);
-                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    state.todayMarkdown = await fetchMarkdown('KANBAN.md');
+                    state.boardDate = parseBoardDate(state.todayMarkdown);
+                    const today = shanghaiParts();
+                    state.daysLate = state.boardDate ? Math.max(0, dayNumber(today) - dayNumber(state.boardDate)) : 0;
+                    state.ready = true;
 
-                    let md = await resp.text();
-                    md = md.replace(/\r\n/g, '\n');
-
-                    marked.setOptions({ breaks: false, gfm: true });
-
-                    content.innerHTML = marked.parse(md);
-                    content.classList.add('markdown-body');
-
-                    content.querySelectorAll('h3').forEach((heading) => {
-                        const list = heading.nextElementSibling;
-                        if (!list || list.tagName !== 'UL') return;
-                        const section = document.createElement('section');
-                        section.className = 'section-card';
-                        heading.parentNode.insertBefore(section, heading);
-                        section.appendChild(heading);
-                        section.appendChild(list);
-                    });
-
-                    loading.style.display = 'none';
-                    document.body.classList.add('is-ready');
+                    const initialView = defaultView();
+                    history.replaceState({ view: initialView, initial: true }, '', location.href);
+                    if (initialView === 'aquarium') showAquarium();
+                    else showToday({ automatic: state.daysLate > 0 && isBeforeNine() });
                 } catch (e) {
                     loading.style.display = 'none';
                     error.style.display = 'block';
@@ -471,17 +1119,30 @@
 
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const src = btn.dataset.src;
-                    const label = btn.dataset.label;
-                    navBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    viewChip.textContent = '📅 ' + label;
-                    subtitleText.textContent = SUBTITLES[src] || '';
-                    loadKanban(src);
+                    showView(btn.dataset.view, true);
                 });
             });
 
-            loadKanban('KANBAN.md');
+            themeToggle.addEventListener('click', () => {
+                const currentlyNight = aquarium.classList.contains('is-night');
+                state.manualTheme = currentlyNight ? 'day' : 'night';
+                applyAquariumTheme();
+            });
+
+            returnBoard.addEventListener('click', () => showView('today', true));
+
+            window.addEventListener('popstate', event => {
+                const view = event.state?.view || defaultView();
+                showView(view, false);
+            });
+
+            window.addEventListener('hashchange', () => {
+                if (location.hash === '#aquarium' && state.currentView !== 'aquarium') showAquarium();
+            });
+
+            updateDateChip();
+            initialize();
+            setInterval(updateClockDrivenState, 1000);
         })();
     </script>
 </body>
