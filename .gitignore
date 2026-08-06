@@ -1,10 +1,11 @@
 # 忽略一切
 *
 
-# 只跟踪这三个
+# 只跟踪这些
 !index.html
 !KANBAN.md
 !.gitignore
 !PREV.md
 !history/
 !history/*
+!.nojekyll
