@@ -9,3 +9,5 @@
 !history/
 !history/*
 !.nojekyll
+!.github/
+!.github/**
