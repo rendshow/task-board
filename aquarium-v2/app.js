@@ -288,7 +288,7 @@ setInterval(refreshContent, 15 * 60 * 1000);
   await loadBoard();
   refreshContent();
   try {
-    await import("./scenes/riverscape/src/main.js");
+    await import("./scenes/riverscape/src/main.js?v=20260929.2");
   } catch (error) {
     sceneError(error);
   }

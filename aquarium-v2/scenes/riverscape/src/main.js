@@ -1,16 +1,16 @@
 import { qualityName, frameRate } from '../../shared/render-policy.js';
-import { installControls, reportSceneError, preferredQuality } from '../../shared/controls.js';
-import { createComposite } from './composite.js';
+import { installControls, reportSceneError, preferredQuality } from '../../shared/controls.js?v=20260929.2';
+import { createComposite } from './composite.js?v=20260929.2';
 import * as THREE from "three";
 import { createEnvironment, createParticles } from "./environment.js";
 import { createPlants } from "./plants.js";
 import { createFishSchool } from "./fish.js";
-import { createCritters } from "./critters.js";
+import { createCritters } from "./critters.js?v=20260929.2";
 import { createFood } from "./food.js";
 import { randomGenerator } from "./math.js";
 import { waterTime } from "./water.js";
 import { createFrameLoop } from "../../shared/frame-loop.js";
-import { renderSettings, framebufferSize } from "./render-policy.js";
+import { renderSettings, framebufferSize } from "./render-policy.js?v=20260929.2";
 
 const canvas = document.querySelector("#scene");
 const stage = document.querySelector("#stage");

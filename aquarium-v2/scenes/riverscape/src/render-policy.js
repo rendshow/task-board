@@ -1,4 +1,4 @@
-import { QUALITY_PRESETS, activeQuality, renderScale } from '../../shared/render-policy.js';
+import { QUALITY_PRESETS, activeQuality, renderScale } from '../../shared/render-policy.js?v=20260929.2';
 // Rendering budgets, kept separate from animation and scene behaviour. The reference
 // profile reproduces the uploaded rendering/density settings for local A/B checks.
 export const PROFILES = Object.freeze({
