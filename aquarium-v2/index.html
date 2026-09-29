@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN" data-motion="preview">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#030b0c" />
+    <meta name="description" content="TaskHepler 的暗绿玻璃摸鱼鱼缸，内含一条常驻小泥鳅。" />
+    <title>摸鱼水族馆 3D 预览 · TaskHepler</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="stage" aria-label="3D 摸鱼水族馆">
+      <div class="tank-frame">
+        <canvas id="scene" tabindex="0" aria-label="暗绿色 3D 鱼缸。移动光标靠近居民，点击居民抽取动态摸鱼签；点击空水面投喂。按空格暂停，J 抽签，L 问泥鳅，F 全屏。"></canvas>
+        <div class="glass-reflection" aria-hidden="true"></div>
+        <div class="pixel-film" aria-hidden="true"></div>
+
+        <header class="chrome tank-header">
+          <div class="brand-lockup">
+            <span class="brand-script">gulu gulu</span>
+            <span class="brand-sub">TASKHEPLER · 3D 摸鱼预览</span>
+          </div>
+          <div class="header-actions">
+            <button id="theme-toggle" type="button" aria-label="切换昼夜预览">☼</button>
+            <button id="back-board" type="button">看板</button>
+          </div>
+        </header>
+
+        <section class="status-card" aria-live="polite">
+          <p class="status-kicker">🫧 今日水情</p>
+          <p id="status-text">正在读取看板日期...</p>
+          <p id="board-meta" class="board-meta"></p>
+          <p id="api-status" class="api-status">动态签筒正在装水...</p>
+        </section>
+
+        <div id="message-bubble" class="message-bubble" role="status" aria-live="polite" hidden>
+          <span id="message-label" class="message-label">水族馆签筒</span>
+          <span id="message-text" class="message-text"></span>
+          <a id="message-link" target="_blank" rel="noopener noreferrer" hidden>查看热榜</a>
+        </div>
+
+        <footer class="chrome tank-controls" aria-label="水族馆控制">
+          <div class="control-pill">
+            <button disabled id="pause" aria-pressed="false" title="空格">暂停</button>
+            <button disabled id="feed" title="点击空水面也可以投喂">投食</button>
+            <button id="draw-quote" type="button" title="J">抽签</button>
+            <button id="ask-loach" type="button" title="L">问泥鳅</button>
+            <button disabled id="fullscreen" title="F">全屏</button>
+            <select disabled id="quality" aria-label="画质">
+              <option value="eco">Eco</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="detail">Detail</option>
+            </select>
+            <button id="hide" type="button" title="H">隐藏控件</button>
+          </div>
+        </footer>
+
+        <button id="show-controls" class="show-controls" type="button" title="H" disabled>显示控件</button>
+        <div id="loading" class="loading" role="status"><p>正在点亮玻璃缸...</p></div>
+        <div id="error" class="scene-error" role="alert" hidden></div>
+      </div>
+
+      <nav class="page-links" aria-label="返回入口">
+        <a href="../#aquarium">← 返回正式摸鱼水族馆</a>
+        <a href="../">查看今日看板</a>
+        <span>本页是 3D 候选预览，刷新会恢复自动昼夜模式。</span>
+      </nav>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
