@@ -2,6 +2,18 @@ import { QUALITY_PRESETS, activeQuality, renderScale } from '../../shared/render
 // Rendering budgets, kept separate from animation and scene behaviour. The reference
 // profile reproduces the uploaded rendering/density settings for local A/B checks.
 export const PROFILES = Object.freeze({
+  eco: Object.freeze({
+    name: 'eco',
+    shadowSize: 1024,
+    shadowHz: 12,
+    batteryShadowHz: 8,
+    aoSamples: 4,
+    backgroundDensity: 0.55,
+    backgroundRows: 16,
+    backgroundCols: 2,
+    samples: 2,
+    powerPreference: 'low-power',
+  }),
   balanced: Object.freeze({
     name: 'balanced',
     shadowSize: 2048,
@@ -12,7 +24,20 @@ export const PROFILES = Object.freeze({
     backgroundDensity: 0.7,
     backgroundRows: 20,
     backgroundCols: 2,
+    samples: 4,
     powerPreference: 'low-power',
+  }),
+  detail: Object.freeze({
+    name: 'detail',
+    shadowSize: 4096,
+    shadowHz: Infinity,
+    batteryShadowHz: 30,
+    aoSamples: 12,
+    backgroundDensity: 1,
+    backgroundRows: 30,
+    backgroundCols: 5,
+    samples: 4,
+    powerPreference: 'high-performance',
   }),
   reference: Object.freeze({
     name: 'reference',
@@ -23,6 +48,7 @@ export const PROFILES = Object.freeze({
     backgroundDensity: 1,
     backgroundRows: 30,
     backgroundCols: 6,
+    samples: 4,
     powerPreference: 'high-performance',
   }),
 });
@@ -41,9 +67,8 @@ export function renderSettings({
     maxPixels: budget.name === 'reference' ? Infinity : QUALITY_PRESETS[activeQuality(profile, onBattery)].pixels,
     referenceResolution,
     shadowHz: onBattery ? budget.batteryShadowHz : budget.shadowHz,
-    // The leaf shader uses quarter-sample coverage for translucent tissue. Keep 4x
-    // MSAA and the HDR format: changing either would be a much larger visual change.
-    samples: 4,
+    // Eco trims multisampling; the two sharper modes retain the original 4x target.
+    samples: budget.samples,
   };
 }
 

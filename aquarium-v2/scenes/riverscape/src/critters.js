@@ -26,13 +26,13 @@ function cylinderBetween(a, b, radius, mat, segments = 6) {
   return mesh;
 }
 
-function addWhiskers(group, materialRef) {
+function addWhiskers(headBone) {
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0xb7a277, transparent: true, opacity: 0.75 });
   const anchors = [
-    [0.13, 0.035, 0.09, 0.35, 0.1, 0.17],
-    [0.13, 0.035, -0.09, 0.35, 0.1, -0.17],
-    [0.1, -0.015, 0.09, 0.31, -0.08, 0.16],
-    [0.1, -0.015, -0.09, 0.31, -0.08, -0.16],
+    [0.04, 0.025, 0.08, 0.29, 0.075, 0.18],
+    [0.04, 0.025, -0.08, 0.29, 0.075, -0.18],
+    [0.055, -0.025, 0.075, 0.27, -0.08, 0.17],
+    [0.055, -0.025, -0.075, 0.27, -0.08, -0.17],
   ];
   for (const [x1, y1, z1, x2, y2, z2] of anchors) {
     const geometry = new THREE.BufferGeometry().setFromPoints([
@@ -40,48 +40,141 @@ function addWhiskers(group, materialRef) {
       new THREE.Vector3(x2, y2, z2),
     ]);
     const line = new THREE.Line(geometry, lineMaterial);
-    line.userData.dynamic = true;
-    line.userData.whiskerMaterial = materialRef;
-    group.add(line);
+    headBone.add(line);
   }
 }
 
+function loachGeometry(length, ringCount, sideCount, boneCount) {
+  const positions = [];
+  const colors = [];
+  const skinIndices = [];
+  const skinWeights = [];
+  const indices = [];
+  for (let ring = 0; ring <= ringCount; ring += 1) {
+    const t = ring / ringCount;
+    const x = length * (0.5 - t);
+    const radius = 0.026 + Math.sin(Math.PI * Math.pow(t, 0.72)) * (0.118 - t * 0.026);
+    const boneFloat = t * (boneCount - 1);
+    const lower = Math.min(boneCount - 1, Math.floor(boneFloat));
+    const upper = Math.min(boneCount - 1, lower + 1);
+    const upperWeight = boneFloat - lower;
+    for (let side = 0; side < sideCount; side += 1) {
+      const angle = side / sideCount * TAU;
+      const y = Math.cos(angle) * radius * 0.66;
+      const z = Math.sin(angle) * radius;
+      positions.push(x, y, z);
+      const belly = THREE.MathUtils.smoothstep(-y / Math.max(radius, 0.001), 0.05, 0.72);
+      const mottled = Math.sin(ring * 1.73 + side * 2.21) * 0.035 + Math.sin(ring * 0.47 - side) * 0.025;
+      colors.push(
+        THREE.MathUtils.clamp(0.34 + belly * 0.32 + mottled, 0, 1),
+        THREE.MathUtils.clamp(0.28 + belly * 0.27 + mottled * 0.7, 0, 1),
+        THREE.MathUtils.clamp(0.155 + belly * 0.18 + mottled * 0.35, 0, 1),
+      );
+      skinIndices.push(lower, upper, 0, 0);
+      skinWeights.push(1 - upperWeight, upperWeight, 0, 0);
+    }
+  }
+  for (let ring = 0; ring < ringCount; ring += 1) {
+    for (let side = 0; side < sideCount; side += 1) {
+      const next = (side + 1) % sideCount;
+      const a = ring * sideCount + side;
+      const b = ring * sideCount + next;
+      const c = (ring + 1) * sideCount + side;
+      const d = (ring + 1) * sideCount + next;
+      indices.push(a, c, b, b, c, d);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndices, 4));
+  geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeights, 4));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function finGeometry(points) {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+  geometry.setIndex([0, 1, 2]);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function createLoach() {
-  const group = markDynamic(new THREE.Group());
+  const group = new THREE.Group();
   group.name = "常驻小泥鳅";
-  const bodyMaterial = material(0x746544, 0.86);
-  const bellyMaterial = material(0xb6a27a, 0.92);
-  const darkMaterial = material(0x1c211d, 0.58);
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.76, 4, 10), bodyMaterial);
-  body.rotation.z = Math.PI / 2;
-  body.scale.set(1, 0.72, 0.72);
-  body.position.x = -0.02;
+  const length = 1.85;
+  const boneCount = 8;
+  const bones = [];
+  const spacing = length / (boneCount - 1);
+  for (let index = 0; index < boneCount; index += 1) {
+    const bone = new THREE.Bone();
+    bone.name = index === 0 ? '泥鳅头骨' : `泥鳅脊骨 ${index}`;
+    bone.position.x = index === 0 ? length * 0.5 : -spacing;
+    if (index) bones[index - 1].add(bone);
+    bones.push(bone);
+  }
+  const bodyMaterial = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.8,
+    metalness: 0,
+    emissive: 0x211607,
+    emissiveIntensity: 0.12,
+  });
+  const body = new THREE.SkinnedMesh(loachGeometry(length, 32, 12, boneCount), bodyMaterial);
+  body.add(bones[0]);
+  body.bind(new THREE.Skeleton(bones));
+  body.castShadow = true;
+  body.receiveShadow = true;
+  body.frustumCulled = false;
   group.add(body);
 
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 5), bellyMaterial);
-  belly.scale.set(2.7, 0.52, 0.8);
-  belly.position.set(0.08, -0.055, 0);
-  group.add(belly);
-
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 9, 6), bodyMaterial);
-  head.scale.set(1.15, 0.82, 0.82);
-  head.position.x = 0.45;
-  group.add(head);
-
-  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.36, 7), bodyMaterial);
-  tail.rotation.z = -Math.PI / 2;
-  tail.position.x = -0.58;
-  tail.scale.set(1, 0.72, 0.72);
-  group.add(tail);
+  const headMaterial = new THREE.MeshStandardMaterial({ color: 0x766443, roughness: 0.78, emissive: 0x211607, emissiveIntensity: 0.1 });
+  const darkMaterial = material(0x1c211d, 0.58);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 14, 9), headMaterial);
+  head.scale.set(1.32, 0.76, 0.92);
+  head.position.set(-0.065, 0, 0);
+  bones[0].add(head);
 
   for (const z of [-0.095, 0.095]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.026, 6, 4), darkMaterial);
-    eye.position.set(0.54, 0.07, z);
-    group.add(eye);
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 8, 6), darkMaterial);
+    eye.position.set(-0.015, 0.062, z);
+    bones[0].add(eye);
   }
-  addWhiskers(group, bodyMaterial);
+  addWhiskers(bones[0]);
 
-  const resident = { kind: "loach", label: "小泥鳅", group, pickables: [] };
+  const finMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8f7950,
+    roughness: 0.75,
+    transparent: true,
+    opacity: 0.82,
+    side: THREE.DoubleSide,
+  });
+  for (const side of [-1, 1]) {
+    const fin = new THREE.Mesh(finGeometry([
+      [-0.18, -0.015, side * 0.07],
+      [-0.42, -0.07, side * 0.28],
+      [-0.34, 0.035, side * 0.1],
+    ]), finMaterial);
+    bones[1].add(fin);
+  }
+  const dorsal = new THREE.Mesh(finGeometry([
+    [0.06, 0.065, 0],
+    [-0.27, 0.22, 0],
+    [-0.34, 0.06, 0],
+  ]), finMaterial);
+  bones[3].add(dorsal);
+  const tail = new THREE.Mesh(finGeometry([
+    [0.02, 0, 0],
+    [-0.31, 0.18, 0],
+    [-0.31, -0.18, 0],
+  ]), finMaterial);
+  bones[boneCount - 1].add(tail);
+
+  markDynamic(group);
+  const resident = { kind: "loach", label: "小泥鳅", group, bones, pickables: [] };
   group.traverse((child) => {
     if (child.isMesh || child.isLine) {
       child.userData.resident = resident;
@@ -180,7 +273,7 @@ export function createCritters(scene, { missingDays = 0 } = {}) {
   const residents = [loach, ...shrimp, ...crabs, ...hermits];
   residents.forEach((resident) => scene.add(resident.group));
 
-  place(loach, -1.4, 1.95, 1.28);
+  place(loach, -1.4, 1.95, 1.06);
   place(shrimp[0], -4.7, 0.55, 0.95);
   place(shrimp[1], 4.6, 1.2, 0.9);
   place(crabs[0], -2.8, 2.15, 0.95);
@@ -188,8 +281,9 @@ export function createCritters(scene, { missingDays = 0 } = {}) {
   hermits.forEach((resident, index) => place(resident, -5.7 + index * 1.75, 2.7 + (index % 2) * 0.18, 0.72));
 
   let loachT = 0.08;
-  let loachDash = 0;
-  let loachFlash = 0;
+  let loachAlert = 0;
+  let loachStartle = 0;
+  let loachDirection = 1;
   const path = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-5.2, 0, 2.25),
     new THREE.Vector3(-3.4, 0, 2.8),
@@ -200,20 +294,37 @@ export function createCritters(scene, { missingDays = 0 } = {}) {
     new THREE.Vector3(-0.8, 0, 1.75),
   ], true, "catmullrom", 0.55);
   const nextPoint = new THREE.Vector3();
+  const otherPoint = new THREE.Vector3();
   const direction = new THREE.Vector3();
   function updateLoach(dt, time, pointer) {
-    if (pointer && pointer.position.distanceTo(loach.group.position) < 2.2) loachDash = Math.max(loachDash, 0.65);
-    loachDash = Math.max(0, loachDash - dt * 0.22);
-    loachT = (loachT + dt * (0.012 + loachDash * 0.042)) % 1;
+    let proximity = 0;
+    if (pointer) {
+      const distance = pointer.position.distanceTo(loach.group.position);
+      proximity = 1 - THREE.MathUtils.smoothstep(distance, 1.15, 2.65);
+      if (proximity > 0.12) {
+        path.getPointAt((loachT + 0.018) % 1, nextPoint);
+        path.getPointAt((loachT - 0.018 + 1) % 1, otherPoint);
+        loachDirection = nextPoint.distanceTo(pointer.position) >= otherPoint.distanceTo(pointer.position) ? 1 : -1;
+      }
+    }
+    const response = proximity > loachAlert ? 9 : 2.4;
+    loachAlert += (proximity - loachAlert) * (1 - Math.exp(-dt * response));
+    loachStartle = Math.max(0, loachStartle - dt * 1.7);
+    const escape = Math.max(loachAlert, loachStartle);
+    loachT = (loachT + loachDirection * dt * (0.0018 + escape * 0.036) + 1) % 1;
     const point = path.getPointAt(loachT);
-    path.getPointAt((loachT + 0.002) % 1, nextPoint);
+    path.getPointAt((loachT + loachDirection * 0.002 + 1) % 1, nextPoint);
     direction.subVectors(nextPoint, point).normalize();
-    const y = groundHeight(point.x, point.z) + 0.22 + Math.sin(time * 4.2) * 0.024;
+    const y = groundHeight(point.x, point.z) + 0.24 + Math.sin(time * 1.15) * 0.012;
     loach.group.position.set(point.x, y, point.z);
     loach.group.rotation.y = Math.atan2(-direction.z, direction.x);
-    loach.group.rotation.z = Math.sin(time * 8.5) * 0.035 + loachDash * Math.sin(time * 25) * 0.12;
-    loach.group.scale.setScalar(1.28 + Math.sin(time * 3.5) * 0.015 + loachFlash * 0.12);
-    loachFlash = Math.max(0, loachFlash - dt * 1.8);
+    loach.group.rotation.z = Math.sin(time * 1.1) * 0.008;
+    const gait = 0.72 + escape * 10.5;
+    loach.bones.forEach((bone, index) => {
+      const tailWeight = Math.pow(index / (loach.bones.length - 1), 1.45);
+      bone.rotation.y = Math.sin(time * gait - index * 0.7) * (0.003 + tailWeight * (0.018 + escape * 0.16));
+      bone.rotation.z = Math.sin(time * gait * 0.48 - index * 0.43) * tailWeight * (0.002 + escape * 0.024);
+    });
   }
   function updateStationary(resident, time, index) {
     resident.group.position.y = resident.home.y + Math.sin(time * (1.2 + index * 0.07) + index) * 0.018;
@@ -229,8 +340,7 @@ export function createCritters(scene, { missingDays = 0 } = {}) {
   function react(resident) {
     if (!resident) return;
     if (resident.kind === "loach") {
-      loachDash = 1.2;
-      loachFlash = 1;
+      loachStartle = 0.7;
     }
     resident.flash = 1;
   }

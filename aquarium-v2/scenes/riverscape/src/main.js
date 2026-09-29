@@ -117,14 +117,14 @@ async function start() {
   let nightTheme = Boolean(window.aquariumNight);
   function setTheme(night) {
     nightTheme = Boolean(night);
-    scene.background.set(nightTheme ? "#020d15" : "#050f0c");
-    scene.fog.color.set(nightTheme ? "#0b2730" : "#16312a");
-    scene.fog.density = nightTheme ? 0.042 : 0.034;
-    renderer.toneMappingExposure = nightTheme ? 1.24 : 1.72;
-    hemisphere.intensity = nightTheme ? 0.34 : 0.52;
-    key.intensity = nightTheme ? 4.1 : 7.4;
-    fill.intensity = nightTheme ? 0.56 : 0.84;
-    back.intensity = nightTheme ? 0.76 : 1.28;
+    scene.background.set(nightTheme ? "#06131b" : "#0b2119");
+    scene.fog.color.set(nightTheme ? "#17313d" : "#27463a");
+    scene.fog.density = nightTheme ? 0.038 : 0.031;
+    renderer.toneMappingExposure = nightTheme ? 0.98 : 1.16;
+    hemisphere.intensity = nightTheme ? 0.22 : 0.3;
+    key.intensity = nightTheme ? 2.65 : 4.5;
+    fill.intensity = nightTheme ? 0.34 : 0.44;
+    back.intensity = nightTheme ? 0.48 : 0.8;
   }
   window.sceneSetTheme = setTheme;
   document.addEventListener("aquarium-theme-change", (event) => setTheme(event.detail?.night));
@@ -324,8 +324,17 @@ async function start() {
     quality: () => profile === 'reference' ? 'detail' : profile,
     setQuality(value) {
       profile = qualityName(value);
-      loop?.setRate(frameRate(profile, requestedRate, onBattery));
       resize();
+      key.shadow.mapSize.set(settings.shadowSize, settings.shadowSize);
+      key.shadow.map?.dispose();
+      key.shadow.map = null;
+      if (target.samples !== settings.samples) {
+        target.samples = settings.samples;
+        target.dispose();
+      }
+      forceShadows = true;
+      loop?.setRate(frameRate(profile, requestedRate, onBattery));
+      loop?.invalidate();
       updateControls();
     },
   });

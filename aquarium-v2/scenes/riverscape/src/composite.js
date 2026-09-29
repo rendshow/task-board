@@ -15,15 +15,12 @@ export function createComposite(camera, settings) {
           occlusion+=smoothstep(.012,.13,difference)*(1.-smoothstep(.2,.8,difference));
         }
         color*=1.-occlusion*${(0.022 * 12 / settings.aoSamples).toFixed(8)};
-        // Keep the planted bed readable beneath the dark glass treatment while letting
-        // the final ACES pass preserve the green-black cinematic contrast.
-        color*=1.25;
         float vignette=dot((vUv-.5)*vec2(1.,.85),(vUv-.5)*vec2(1.,.85));
         color*=1.-vignette*.15;
         float grain=fract(sin(dot(vUv*size+filmTime,vec2(12.9898,78.233)))*43758.5453)-.5;
         float bayer=mod(floor(vUv.x*size.x)+2.*floor(vUv.y*size.y),4.)/16.;
-        color+=grain*.018+bayer*.008;
-        color=floor(color*30.+.5)/30.;
+        color+=grain*.008+bayer*.003;
+        color=floor(color*48.+.5)/48.;
         gl_FragColor=vec4(color,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>

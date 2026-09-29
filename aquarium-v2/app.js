@@ -158,6 +158,10 @@ function choosePool(kind) {
 
 function showMessage({ kind = "random", label = "水族馆签筒" } = {}) {
   const item = choosePool(kind);
+  showItem(label, item);
+}
+
+function showItem(label, item) {
   state.lastMessage = item.text;
   setText(messageLabel, `${label} · ${item.source}`);
   setText(messageText, item.text);
@@ -248,6 +252,9 @@ function onResident({ kind, label }) {
 }
 window.aquariumOnResident = onResident;
 document.addEventListener("aquarium-resident", (event) => onResident(event.detail || {}));
+document.addEventListener("aquarium-quality-change", (event) => {
+  showItem("画质已切换", { text: event.detail?.text || "画质设置已更新。", source: "性能设置", url: "" });
+});
 window.aquariumSceneError = sceneError;
 
 $("#draw-quote").addEventListener("click", () => showMessage({ kind: "random", label: "水族馆签筒" }));

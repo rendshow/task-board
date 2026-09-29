@@ -1,10 +1,17 @@
 import { qualityName } from './render-policy.js';
 import { setActionIcon } from '../../ui/icons.js';
 
+const QUALITY_COPY = Object.freeze({
+  eco: '省电模式：20fps，约 105 万渲染像素，1024 级阴影。',
+  balanced: '均衡模式：30fps，约 180 万渲染像素，2048 级阴影。',
+  detail: '精细模式：60fps，约 300 万渲染像素，4096 级阴影。',
+});
+
 export function preferredQuality(params) {
   let saved;
   try { saved = localStorage.getItem('deskworlds-quality'); } catch {}
-  return qualityName(params.get('quality') || saved || (navigator.connection?.saveData ? 'eco' : 'balanced'));
+  const compact = matchMedia('(pointer: coarse)').matches || innerWidth < 720;
+  return qualityName(params.get('quality') || saved || (navigator.connection?.saveData || compact ? 'eco' : 'balanced'));
 }
 
 export function installControls({ stage, isPaused, isRunning, pause, feed, quality, setQuality }) {
@@ -26,7 +33,10 @@ export function installControls({ stage, isPaused, isRunning, pause, feed, quali
       pauseButton.setAttribute('aria-pressed', String(isPaused()));
     }
     if (feedButton) feedButton.disabled = !isRunning();
-    if (select) select.value = quality();
+    if (select) {
+      select.value = quality();
+      select.title = QUALITY_COPY[select.value] || QUALITY_COPY.balanced;
+    }
   }
   function clean(value) {
     document.body.classList.toggle('clean', value);
@@ -48,6 +58,9 @@ export function installControls({ stage, isPaused, isRunning, pause, feed, quali
     setQuality(select.value);
     try { localStorage.setItem('deskworlds-quality', select.value); } catch {}
     refresh();
+    document.dispatchEvent(new CustomEvent('aquarium-quality-change', {
+      detail: { value: select.value, text: QUALITY_COPY[select.value] || QUALITY_COPY.balanced },
+    }));
   });
   document.addEventListener('keydown', event => {
     if (event.repeat || event.target.closest('button,select,input,textarea,a,[contenteditable]')) return;
